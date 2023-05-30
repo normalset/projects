@@ -2,7 +2,7 @@ import pygame
 from sys import exit
 import os
 import math
-os.chdir("D:/Code/Projects/pygameTest")
+os.chdir("D:\Code\projects-1\pygameTest")
 
 def display_score():
     current_time = pygame.time.get_ticks() - start_time
