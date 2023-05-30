@@ -25,6 +25,7 @@ snail_rect = snail_surf.get_rect(midbottom = (600 , 300))
 
 player_surf = pygame.image.load('./graphics/player/player_walk_1.png').convert_alpha()
 player_rect = player_surf.get_rect(midbottom = (80,300))
+player_gravity = 0
                                    
 while True:
     for event in pygame.event.get():
@@ -33,11 +34,17 @@ while True:
             exit()
         # if event.type == pygame.MOUSEMOTION:
         #     if player_rect.collidepoint(event.pos) : print('mouse collision detected')
+        if event.type == pygame.KEYDOWN and event.key == pygame.K_SPACE and player_rect.bottom >= 300:
+            player_gravity = -20
+        if event.type == pygame.MOUSEBUTTONDOWN and player_rect.collidepoint(event.pos) and player_rect.bottom >= 300:
+            player_gravity -= 20
+            
 
     
             
     screen.blit(ground_surf, (0 , 300))
     screen.blit(sky_surf, (0,0))
+
     #rect(surface , color, thing to draw , line width , border radius, )
     pygame.draw.rect(screen , '#c0e8ec' , score_rect , 10 , 10)
     pygame.draw.rect(screen , '#c0e8ec' , score_rect)
@@ -47,10 +54,14 @@ while True:
     snail_rect.x -= 5
     if snail_rect.right <= 0 : snail_rect.left = 800
     screen.blit(player_surf, player_rect)
-
-    # if player_rect.colliderect(snail_rect):
-    #     print('collision detected')
     
+    # player
+    player_gravity += 1
+    player_rect.y += player_gravity
+    if player_rect.bottom >= 300 : player_rect.bottom = 300
+    screen.blit(player_surf , player_rect)
+
+    #collisions
 
     pygame.display.update()
     clock.tick(60)
