@@ -1,13 +1,22 @@
 import pygame 
 from sys import exit
 import os
+import math
 os.chdir("D:/Code/Projects/pygameTest")
+
+def display_score():
+    current_time = pygame.time.get_ticks() - start_time
+    score_surf = test_font.render((f'{math.floor(current_time/1000)}') , False , (64,64,64))
+    score_rect = score_surf.get_rect(center = (400 , 50))
+    screen.blit(score_surf,score_rect)
+
 
 pygame.init()
 pygame.display.set_caption('Runner')
 clock = pygame.time.Clock()
 test_font = pygame.font.Font('./font/Pixeltype.ttf' , 50)
 
+start_time = 0
 game_active = True
 width = 800
 height = 400
@@ -17,8 +26,8 @@ screen = pygame.display.set_mode((width , height))
 sky_surf = pygame.image.load('./graphics/Sky.png').convert()
 ground_surf = pygame.image.load('./graphics/ground.png').convert()
 
-score_surf = test_font.render('My game' , False , (64,64,64))
-score_rect = score_surf.get_rect(center = (width / 2, height *0.2))
+# score_surf = test_font.render('My game' , False , (64,64,64))
+# score_rect = score_surf.get_rect(center = (width / 2, height *0.2))
 
 snail_surf = pygame.image.load('./graphics/snail/snail1.png').convert_alpha()
 snail_rect = snail_surf.get_rect(midbottom = (600 , 300))
@@ -43,15 +52,19 @@ while True:
             if event.type == pygame.KEYDOWN and event.key == pygame.K_SPACE : 
                 game_active = True
                 snail_rect.left = 800
+                start_time = pygame.time.get_ticks()
+                
 
     if game_active :           
         screen.blit(ground_surf, (0 , 300))
         screen.blit(sky_surf, (0,0))
 
         #rect(surface , color, thing to draw , line width , border radius, )
-        pygame.draw.rect(screen , '#c0e8ec' , score_rect , 10 , 10)
-        pygame.draw.rect(screen , '#c0e8ec' , score_rect)
-        screen.blit(score_surf , score_rect)
+        # pygame.draw.rect(screen , '#c0e8ec' , score_rect , 10 , 10)
+        # pygame.draw.rect(screen , '#c0e8ec' , score_rect)
+        # screen.blit(score_surf , score_rect)
+        display_score()
+        
 
         screen.blit(snail_surf, snail_rect)
         snail_rect.x -= 5
