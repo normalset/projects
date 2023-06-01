@@ -38,7 +38,7 @@ fruit_on = False
 fruit = pygame.image.load("./fruit.png").convert_alpha()
 fruit = pygame.transform.rotozoom(fruit , 0 , 0.5)
 fruit_rect = fruit.get_rect()
-fruit_taken = pygame.image.load("./fruit_taken.png").convert_alpha()
+fruit_taken = pygame.image.load("./fruit_take.png").convert_alpha()
 fruit_taken_surf = fruit_taken.get_rect()
 
 
