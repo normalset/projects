@@ -33,13 +33,28 @@ font = pygame.font.Font(None , 50)
 score_text = font.render(f'score: {score}' , None , "White").convert_alpha()
 score_text_rect = score_text.get_rect(center = (WIDTH/2 , HEIGHT*0.2))
 
+#fruits
+fruits = []
+class Fruit:
+    def __init__(self):
+        self.image = pygame.image.load('./fruit.png').convert_alpha()
+        self.image = pygame.transform.rotozoom(self.image, 0, 0.5)
+        self.rect = self.image.get_rect()
+        self.rect.center = (random.randint(50, 950), random.randint(50, 950))
+
+    def draw(self, surface):
+        surface.blit(self.image, self.rect)
+
+    def reset(self):
+        self.rect.center = (random.randint(50, 950), random.randint(50, 950))    
+
 #fruit
-fruit_on = False
-fruit = pygame.image.load("./fruit.png").convert_alpha()
-fruit = pygame.transform.rotozoom(fruit , 0 , 0.5)
-fruit_rect = fruit.get_rect()
-fruit_taken = pygame.image.load("./fruit_take.png").convert_alpha()
-fruit_taken_surf = fruit_taken.get_rect()
+# fruit_on = False
+# fruit = pygame.image.load("./fruit.png").convert_alpha()
+# fruit = pygame.transform.rotozoom(fruit , 0 , 0.5)
+# fruit_rect = fruit.get_rect()
+# fruit_taken = pygame.image.load("./fruit_take.png").convert_alpha()
+# fruit_taken_surf = fruit_taken.get_rect()
 
 
 while True:
@@ -121,22 +136,28 @@ while True:
     screen.blit(PLAYER , player_rect)
     
     #display score
-    if (not player_rect.colliderect(score_text_rect))and(not fruit_rect.colliderect(score_text_rect)) : screen.blit(score_text , score_text_rect)
+    if (not player_rect.colliderect(score_text_rect))and(not any(fruit.rect.colliderect(player_rect) for fruit in fruits)) : 
+        screen.blit(score_text , score_text_rect)
 
-    #spawn fruit
-    if fruit_on : screen.blit(fruit , fruit_rect)
-    if (not fruit_on) and counter > 1 :
-        fruit_on = True
-        fruit_rect.center = (random.randint( 50 , 950 ) , random.randint( 50 , 950 )) 
+    #! Fruit Logic
 
-    if player_rect.colliderect(fruit_rect) :
-        score += 1
-        score_text = font.render(f'score: {score}' , None , "White").convert_alpha()
-        fruit_on = False
+    for fruit in fruits:
+        fruit.draw(screen)
+
+    if (len(fruits) < 5) and counter > 1 :
+        fruits.append(Fruit())
         last_taken = int(pygame.time.get_ticks()/1000)
-        #place fruit out of bounds
-        fruit_rect.center = (-100 , -100)
-        print(score)
+
+        #fruit_rect.center = (random.randint( 50 , 950 ) , random.randint( 50 , 950 )) 
+    
+    for fruit in fruits:
+        if player_rect.colliderect(fruit.rect) :
+            score += 1
+            score_text = font.render(f'score: {score}' , None , "White").convert_alpha()
+            last_taken = int(pygame.time.get_ticks()/1000)
+            #place fruit out of bounds
+            fruits.remove(fruit)
+            print(score)
         
 
     counter = int(pygame.time.get_ticks()/1000) - last_taken
