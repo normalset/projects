@@ -1,4 +1,5 @@
-#todo use classes to create more fruits on the screen 
+#todo aggiungere la modifica della dimensione al momento del puickup di un elemento
+
 import pygame 
 from sys import exit
 import os
@@ -9,8 +10,10 @@ BG_COLOR = "Black"
 WIDTH = 1000
 HEIGHT = 1000
 screen = pygame.display.set_mode((WIDTH , HEIGHT))
-counter = 0
-last_taken = 0
+fruit_counter = 0
+last_fruit_taken = 0
+bomb_counter = 0
+last_bomb_taken = 0
 
 pygame.init()
 pygame.display.set_caption("Physics Test")
@@ -19,6 +22,7 @@ clock = pygame.time.Clock()
 #player
 PLAYER = pygame.image.load("./alienBoolean.png").convert_alpha()
 PLAYER = pygame.transform.rotozoom(PLAYER , 0 , 0.5)
+
 player_rect = PLAYER.get_rect(center = (WIDTH/2 , HEIGHT/2))
 x_grav = 0
 y_grav = 0
@@ -47,6 +51,23 @@ class Fruit:
 
     def reset(self):
         self.rect.center = (random.randint(50, 950), random.randint(50, 950))    
+
+
+bombs = [] 
+class Bomb:
+    def __init__(self):
+        self.image = pygame.image.load('./bomb.png')
+        self.image = pygame.transform.rotozoom(self.image , 0 ,0.5)
+        self.rect = self.image.get_rect()
+        self.rect.center = (random.randint(50, 950), random.randint(50, 950))
+        self.timer = 0
+        self.when_placed = pygame.time.get_ticks()
+
+    def draw(self, surface):
+        surface.blit(self.image, self.rect)
+    
+    def update_timer(self):
+        self.timer = int((pygame.time.get_ticks() - self.when_placed)/1000)
 
 #fruit
 # fruit_on = False
@@ -136,7 +157,7 @@ while True:
     screen.blit(PLAYER , player_rect)
     
     #display score
-    if (not player_rect.colliderect(score_text_rect))and(not any(fruit.rect.colliderect(player_rect) for fruit in fruits)) : 
+    if (not player_rect.colliderect(score_text_rect))and(not (any(fruit.rect.colliderect(score_text_rect) for fruit in fruits)))and(not (any(bomb.rect.colliderect(score_text_rect) for bomb in bombs))): 
         screen.blit(score_text , score_text_rect)
 
     #! Fruit Logic
@@ -144,9 +165,9 @@ while True:
     for fruit in fruits:
         fruit.draw(screen)
 
-    if (len(fruits) < 5) and counter > 1 :
+    if (len(fruits) < 5) and fruit_counter > 1 :
         fruits.append(Fruit())
-        last_taken = int(pygame.time.get_ticks()/1000)
+        last_fruit_taken = int(pygame.time.get_ticks()/1000)
 
         #fruit_rect.center = (random.randint( 50 , 950 ) , random.randint( 50 , 950 )) 
     
@@ -154,12 +175,34 @@ while True:
         if player_rect.colliderect(fruit.rect) :
             score += 1
             score_text = font.render(f'score: {score}' , None , "White").convert_alpha()
-            last_taken = int(pygame.time.get_ticks()/1000)
+            last_fruit_taken = int(pygame.time.get_ticks()/1000)
+            fruit_counter = int(pygame.time.get_ticks()/1000) - last_fruit_taken
             #place fruit out of bounds
             fruits.remove(fruit)
             print(score)
         
+    #! Bomb Logic
+    for bomb in bombs:
+        bomb.draw(screen)
+        bomb.update_timer()
 
-    counter = int(pygame.time.get_ticks()/1000) - last_taken
+    if (len(bombs) < 5) and bomb_counter > 5 :
+        bombs.append(Bomb())
+        last_bomb_taken = int(pygame.time.get_ticks()/1000)
+
+        #fruit_rect.center = (random.randint( 50 , 950 ) , random.randint( 50 , 950 )) 
+    
+    for bomb in bombs:
+        if player_rect.colliderect(bomb.rect) :
+            score -= 1
+            score_text = font.render(f'score: {score}' , None , "White").convert_alpha()
+            last_fruit_taken = int(pygame.time.get_ticks()/1000)
+            # remove bomb
+            bombs.remove(bomb)
+            print(score)
+        if bomb.timer > 5 : bombs.remove(bomb)
+
+    fruit_counter = int(pygame.time.get_ticks()/1000) - last_fruit_taken
+    bomb_counter = int(pygame.time.get_ticks()/1000) - last_bomb_taken
     pygame.display.update()
     clock.tick(60)
