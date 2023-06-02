@@ -6,6 +6,10 @@ import os
 import math , random
 os.chdir("D:/Code/projects-1/pyPhisics")
 
+def debug_console():
+    print(player_rect.topleft , player_rect.bottomright) 
+    print(f'Score: {score}')
+
 BG_COLOR = "Black"
 WIDTH = 1000
 HEIGHT = 1000
@@ -20,16 +24,27 @@ pygame.display.set_caption("Physics Test")
 clock = pygame.time.Clock()
 
 #player
-PLAYER = pygame.image.load("./alienBoolean.png").convert_alpha()
-PLAYER = pygame.transform.rotozoom(PLAYER , 0 , 0.5)
+player = pygame.image.load("./alienBoolean.png")
+player = pygame.transform.rotozoom(player , 0 , 0.5).convert_alpha()
+player_rect = player.get_rect(center = (WIDTH/2 , HEIGHT/2))
 
-player_rect = PLAYER.get_rect(center = (WIDTH/2 , HEIGHT/2))
 x_grav = 0
 y_grav = 0
 moving_up = False
 moving_down = False
 moving_left = False
 moving_right = False
+
+def update_size(val):
+    global player , player_rect
+    print(f'Function update_size called')
+    if score == 0 : 
+        player = pygame.transform.rotozoom(pygame.image.load("./alienBoolean.png") , 0 , 0.5).convert_alpha()
+        
+    player = pygame.transform.rotozoom(player , 0 , val)
+    player_rect = player.get_rect(center = player_rect.center)
+    if player_rect.topright[0] - player_rect.topleft[0]  > WIDTH or player_rect.bottomleft[1] - player_rect.topleft[1] > HEIGHT:
+        update_size(1/val)
 
 #score
 score = 0
@@ -92,7 +107,6 @@ while True:
         #         x_grav /=2
         #     elif event.key == pygame.K_d and x_grav > 0:
         #         x_grav /=2
-
         if event.type == pygame.KEYDOWN:
             if event.key == pygame.K_w:
                 moving_up = True
@@ -125,15 +139,15 @@ while True:
         if moving_right:
             x_grav += 5
             print("moving right" , player_rect)
-            
+
+
     #? Grav kicks in
     player_rect.x += x_grav
     player_rect.y += y_grav
+
     #? Gravity goes away
-    if x_grav > 0 : x_grav *=0.9
-    elif x_grav < 0 : x_grav *=0.9
-    if y_grav > 0 : y_grav *=0.9
-    elif y_grav < 0 : y_grav *=0.9
+    x_grav *= 0.9
+    y_grav *= 0.9
 
     #? collisions
     #top
@@ -154,7 +168,7 @@ while True:
         x_grav *= -1
     
     screen.fill(BG_COLOR)
-    screen.blit(PLAYER , player_rect)
+    screen.blit(player , player_rect)
     
     #display score
     if (not player_rect.colliderect(score_text_rect))and(not (any(fruit.rect.colliderect(score_text_rect) for fruit in fruits)))and(not (any(bomb.rect.colliderect(score_text_rect) for bomb in bombs))): 
@@ -170,15 +184,17 @@ while True:
         last_fruit_taken = int(pygame.time.get_ticks()/1000)
 
         #fruit_rect.center = (random.randint( 50 , 950 ) , random.randint( 50 , 950 )) 
-    
+    #* Fruit gets collected
     for fruit in fruits:
         if player_rect.colliderect(fruit.rect) :
             score += 1
             score_text = font.render(f'score: {score}' , None , "White").convert_alpha()
             last_fruit_taken = int(pygame.time.get_ticks()/1000)
             fruit_counter = int(pygame.time.get_ticks()/1000) - last_fruit_taken
-            #place fruit out of bounds
             fruits.remove(fruit)
+            update_size(1.25)
+            # player = pygame.transform.rotozoom(player , 0 , 1.5)
+            # player_rect = player.get_rect(center = player_rect.center)
             print(score)
         
     #! Bomb Logic
@@ -186,7 +202,7 @@ while True:
         bomb.draw(screen)
         bomb.update_timer()
 
-    if (len(bombs) < 5) and bomb_counter > 5 :
+    if (len(bombs) < 5) and bomb_counter > 1 :
         bombs.append(Bomb())
         last_bomb_taken = int(pygame.time.get_ticks()/1000)
 
@@ -199,6 +215,7 @@ while True:
             last_fruit_taken = int(pygame.time.get_ticks()/1000)
             # remove bomb
             bombs.remove(bomb)
+            update_size(0.75)
             print(score)
         if bomb.timer > 5 : bombs.remove(bomb)
 
@@ -206,3 +223,6 @@ while True:
     bomb_counter = int(pygame.time.get_ticks()/1000) - last_bomb_taken
     pygame.display.update()
     clock.tick(60)
+
+
+
