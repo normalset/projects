@@ -1,0 +1,109 @@
+  body{
+    background-color: black;
+    user-select: none;
+    cursor:cell;
+  }
+
+  div{
+    color: white;
+  }
+
+  p{
+    color: white;
+  }
+
+  .clock {
+    position: relative;
+    display: grid;
+    flex:1;
+    height: 300px;
+    width: 300px;
+    border: 0.1px solid white;
+    border-radius: 5px;
+    padding: 50px;
+    text-align: center;
+    margin: 0px auto;
+    overflow:hidden;
+    place-items: center;
+  }
+
+  .row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    height: 10%;
+    width: 100%;
+  }
+
+  p{
+    opacity: 0.2;
+  }
+
+  p,
+  .it,
+  .is,
+  .am,
+  .pm,
+  .a,
+  .quarter,
+  .twenty,
+  .five-up,
+  .half,
+  .ten-up,
+  .to,
+  .past,
+  .nine,
+  .one,
+  .six,
+  .three,
+  .four,
+  .five-down,
+  .two,
+  .eight,
+  .eleven,
+  .seven,
+  .twelve,
+  .ten-down,
+  .oclock {
+    margin: 0px;
+    font-size: 1.5em;
+    justify-content: space-between;
+    font-family: 'Quicksand', sans-serif;
+    transition: 250ms ease;
+  }
+
+  .it,.is{
+    opacity: 100%;
+  }
+
+  .on{
+    opacity: 1;
+  }
+  .off{
+    opacity: 0.2;
+  }
+
+.nightColor{
+  color: #2e07b0;
+  border-color: #2e07b0;
+}
+
+.dayColor{
+  color: #f5b105;
+  border-color: #f5b105;
+}
+
+.title, .description {
+  font-family: 'Quicksand', sans-serif;
+}
+.title{
+  font-size: 25px;
+  margin: 25px auto;
+  text-align: center;
+}
+
+.description{
+  margin: 25px auto;
+  text-align:center;
+  opacity:60%
+}
