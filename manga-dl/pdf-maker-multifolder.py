@@ -1,4 +1,3 @@
-# manga-dl base project @ https://github.com/daijro/manga-dl.git by daijro
 from PIL import Image
 import os
 
